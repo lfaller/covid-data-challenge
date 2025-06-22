@@ -204,6 +204,10 @@ This project follows professional development practices:
 - **Documentation**: Comprehensive docstrings and inline comments
 - **Error Handling**: Graceful failure modes with informative logging
 
+## 🤝 Development Acknowledgments
+
+This project was developed with assistance from Claude (Anthropic) for code review, architectural guidance, and best practices validation. All technical decisions, problem-solving approaches, and implementation strategies reflect my own data engineering experience and judgment.
+
 ## 📄 License
 
 This project is intended as a technical demonstration and coding challenge submission.
