@@ -385,20 +385,20 @@ class TestDataMerger:
         assert all(col in mapping_table.columns for col in expected_columns)
 
         # Check specific mappings
-        afghanistan_row = mapping_table[mapping_table['country'] == 'Afghanistan'].iloc[0]
-        assert afghanistan_row['in_owid']  # Should be truthy
-        assert afghanistan_row['in_api']   # Should be truthy
-        assert afghanistan_row['can_merge']  # Should be truthy
-        
-        owid_only_row = mapping_table[mapping_table['country'] == 'OWID_Only'].iloc[0]
-        assert owid_only_row['in_owid']  # Should be truthy
-        assert not owid_only_row['in_api']  # Should be falsy
-        assert not owid_only_row['can_merge']  # Should be falsy
-        
-        api_only_row = mapping_table[mapping_table['country'] == 'API_Only'].iloc[0]
-        assert not api_only_row['in_owid']  # Should be falsy
-        assert api_only_row['in_api']  # Should be truthy
-        assert not api_only_row['can_merge']  # Should be falsy
+        afghanistan_row = mapping_table[mapping_table["country"] == "Afghanistan"].iloc[0]
+        assert afghanistan_row["in_owid"]  # Should be truthy
+        assert afghanistan_row["in_api"]  # Should be truthy
+        assert afghanistan_row["can_merge"]  # Should be truthy
+
+        owid_only_row = mapping_table[mapping_table["country"] == "OWID_Only"].iloc[0]
+        assert owid_only_row["in_owid"]  # Should be truthy
+        assert not owid_only_row["in_api"]  # Should be falsy
+        assert not owid_only_row["can_merge"]  # Should be falsy
+
+        api_only_row = mapping_table[mapping_table["country"] == "API_Only"].iloc[0]
+        assert not api_only_row["in_owid"]  # Should be falsy
+        assert api_only_row["in_api"]  # Should be truthy
+        assert not api_only_row["can_merge"]  # Should be falsy
 
     def test_align_temporal_data(self):
         """Test temporal alignment of datasets."""
