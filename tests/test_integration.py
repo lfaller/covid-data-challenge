@@ -355,36 +355,6 @@ class TestIntegration:
         assert "api_quality" in quality_report
 
 
-# Fixtures for common test data
-@pytest.fixture
-def sample_owid_data():
-    """Sample OWID data for testing."""
-    return pd.DataFrame(
-        {
-            "country": ["Afghanistan", "Albania", "Algeria"],
-            "date": pd.date_range("2024-01-01", periods=3),
-            "iso_code": ["AFG", "ALB", "DZA"],
-            "population": [40000000, 3000000, 45000000],
-            "total_cases": [1000, 500, 800],
-            "total_deaths": [50, 25, 40],
-        }
-    )
-
-
-@pytest.fixture
-def sample_api_data():
-    """Sample API data for testing."""
-    return pd.DataFrame(
-        {
-            "country": ["Afghanistan", "Albania", "Algeria"],
-            "iso_code": ["AFG", "ALB", "DZA"],
-            "population": [40000000, 3000000, 45000000],
-            "current_cases": [1200, 600, 900],
-            "current_deaths": [60, 30, 45],
-        }
-    )
-
-
 if __name__ == "__main__":
     # Run tests if executed directly
     pytest.main([__file__, "-v"])
