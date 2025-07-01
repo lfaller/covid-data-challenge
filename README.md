@@ -68,6 +68,12 @@ poetry run pytest tests/test_integration.py::TestDataMerger -v
 # Launch the Streamlit dashboard
 poetry run streamlit run streamlit_app.py
 
+# Launch with debug mode (shows diagnostic information)
+poetry run streamlit run streamlit_app.py -- --debug
+
+# Or set environment variable for debug mode
+STREAMLIT_DEBUG=true poetry run streamlit run streamlit_app.py
+
 # Dashboard will be available at http://localhost:8501
 ```
 
@@ -79,6 +85,7 @@ poetry run streamlit run streamlit_app.py
 - **Data Quality Assessment**: Integration statistics and completeness analysis
 - **Raw Data Explorer**: Searchable dataset with export functionality
 - **Data Definitions**: Comprehensive methodology and limitation documentation
+- **Debug Mode**: Diagnostic information for data pipeline troubleshooting (when enabled)
 
 ## 🛠️ Running Individual Components
 

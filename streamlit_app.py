@@ -6,7 +6,6 @@ Provides dynamic filtering, visualization, and analysis capabilities for the
 merged OWID historical and disease.sh current data.
 """
 
-import logging
 import os
 import sys
 from datetime import datetime
@@ -18,11 +17,19 @@ import streamlit as st
 # Add src directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
+from covid_integration.config.logging_config import configure_logging
 from covid_integration.data_cleaner import clean_all_data
 
 # Import our modules (after path setup)
 from covid_integration.data_loader import load_all_data
 from covid_integration.data_merger import integrate_covid_data
+
+# Check for debug mode
+DEBUG_MODE = (
+    os.getenv("STREAMLIT_DEBUG", "").lower() in ["true", "1", "yes"]
+    or "--debug" in sys.argv
+    or "-d" in sys.argv
+)
 
 # Configure page
 st.set_page_config(
@@ -32,8 +39,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Configure logging to suppress verbose output
-logging.getLogger().setLevel(logging.WARNING)
+# Configure logging to suppress verbose output for Streamlit
+configure_logging(level="WARNING", suppress_external=True)
 
 
 @st.cache_data
@@ -44,11 +51,62 @@ def load_and_integrate_data():
             # Load raw data
             owid_raw, api_raw, _ = load_all_data()
 
+            # Debug: Check for US in raw data (only in debug mode)
+            if DEBUG_MODE:
+                owid_us_variants = [
+                    country
+                    for country in owid_raw["country"].unique()
+                    if "unit" in country.lower()
+                    or "usa" in country.lower()
+                    or "america" in country.lower()
+                ]
+                api_us_variants = [
+                    country
+                    for country in api_raw["country"].unique()
+                    if "unit" in country.lower()
+                    or "usa" in country.lower()
+                    or "america" in country.lower()
+                ]
+
+                st.sidebar.info(f"🔍 Debug - OWID US variants: {owid_us_variants}")
+                st.sidebar.info(f"🔍 Debug - API US variants: {api_us_variants}")
+
             # Clean data
             owid_clean, api_clean, _ = clean_all_data(owid_raw, api_raw)
 
+            # Debug: Check for US after cleaning (only in debug mode)
+            if DEBUG_MODE:
+                owid_clean_us = [
+                    country
+                    for country in owid_clean["country_standardized"].unique()
+                    if "unit" in country.lower()
+                    or "usa" in country.lower()
+                    or "america" in country.lower()
+                ]
+                api_clean_us = [
+                    country
+                    for country in api_clean["country_standardized"].unique()
+                    if "unit" in country.lower()
+                    or "usa" in country.lower()
+                    or "america" in country.lower()
+                ]
+
+                st.sidebar.info(f"🔍 Debug - OWID cleaned US variants: {owid_clean_us}")
+                st.sidebar.info(f"🔍 Debug - API cleaned US variants: {api_clean_us}")
+
             # Integrate data
             merged_data, integration_summary = integrate_covid_data(owid_clean, api_clean)
+
+            # Debug: Check for US after merging (only in debug mode)
+            if DEBUG_MODE:
+                merged_us = [
+                    country
+                    for country in merged_data["country_standardized"].unique()
+                    if "unit" in country.lower()
+                    or "usa" in country.lower()
+                    or "america" in country.lower()
+                ]
+                st.sidebar.info(f"🔍 Debug - Merged US variants: {merged_us}")
 
         return merged_data, integration_summary, True
     except Exception as e:
@@ -385,6 +443,10 @@ def main():
     """Main dashboard application."""
     st.title("🦠 COVID-19 Data Integration Dashboard")
 
+    # Show debug mode indicator
+    if DEBUG_MODE:
+        st.warning("🔧 **DEBUG MODE ACTIVE** - Additional diagnostic information is shown")
+
     # Prominent data disclaimer
     st.error(
         "⚠️ **IMPORTANT DATA LIMITATION:** This dashboard shows historical data through August 2024 only. The 'current' metrics reflect the most recent available data from that time period, NOT real-time conditions."
@@ -419,10 +481,34 @@ def main():
     # Add sidebar disclaimer too
     st.sidebar.error("⚠️ Data is historical through August 2024 only")
 
-    # Country selection
+    # Country selection - define all_countries first
     all_countries = sorted(merged_df["country_standardized"].unique())
-    default_countries = ["United States", "India", "Brazil", "Germany", "France"]
+    default_countries = ["USA", "India", "Brazil", "Germany", "France"]  # Updated to use 'USA'
     available_defaults = [c for c in default_countries if c in all_countries]
+
+    # Debug expander for country list (only in debug mode)
+    if DEBUG_MODE:
+        with st.sidebar.expander("🔧 Debug: Available Countries"):
+            st.write(f"**Total countries:** {len(merged_df)}")
+            st.write(f"**Countries in dropdown:** {len(all_countries)}")
+            # Show first 20 countries alphabetically
+            st.write("**Sample countries:**")
+            for i, country in enumerate(all_countries[:20]):
+                st.write(f"{i + 1}. {country}")
+            if len(all_countries) > 20:
+                st.write(f"... and {len(all_countries) - 20} more")
+
+    # Debug: Check for US variants (only in debug mode)
+    if DEBUG_MODE:
+        us_variants = [
+            country
+            for country in all_countries
+            if "unit" in country.lower() or "usa" in country.lower() or "america" in country.lower()
+        ]
+        if not any("United States" in country or "USA" in country for country in all_countries):
+            st.sidebar.warning(f"⚠️ US not found. Available US-like countries: {us_variants}")
+        else:
+            st.sidebar.success(f"✅ US found! Available US-like countries: {us_variants}")
 
     selected_countries = st.sidebar.multiselect(
         "Select Countries for Comparison:",

@@ -6,23 +6,24 @@ to create unified datasets for analysis. Key functions include temporal alignmen
 data harmonization, and intelligent gap filling.
 """
 
-import logging
 from datetime import datetime, timedelta
 from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
 
-# Import centralized constants
+# Import centralized constants and logging
 try:
     # Relative import (when used as module)
     from .config.constants import DEFAULT_TREND_WINDOW_DAYS
+    from .config.logging_config import get_logger
 except ImportError:
     # Absolute import (when run directly)
     from covid_integration.config.constants import DEFAULT_TREND_WINDOW_DAYS
+    from covid_integration.config.logging_config import get_logger
 
 # Configure logging
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def create_country_mapping_table(owid_df: pd.DataFrame, api_df: pd.DataFrame) -> pd.DataFrame:

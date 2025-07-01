@@ -7,26 +7,26 @@ This module handles loading and initial parsing of COVID-19 data from multiple s
 """
 
 import json
-import logging
 from typing import Dict, List
 
 import pandas as pd
 import requests
 
-# Import centralized constants
+# Import centralized constants and logging
 try:
     # Relative import (when used as module)
     from .config.constants import DISEASE_SH_API_URL, OWID_CSV_URL
+    from .config.logging_config import get_logger
 except ImportError:
     # Absolute import (when run directly)
     from covid_integration.config.constants import (
         DISEASE_SH_API_URL,
         OWID_CSV_URL,
     )
+    from covid_integration.config.logging_config import get_logger
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def load_owid_data(url: str = OWID_CSV_URL) -> pd.DataFrame:
