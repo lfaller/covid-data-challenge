@@ -6,7 +6,6 @@ COVID-19 dataset. Includes trend analysis, comparative plots, and data quality
 visualizations that tell compelling data stories.
 """
 
-import logging
 import warnings
 from pathlib import Path
 from typing import Dict
@@ -16,7 +15,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-# Import centralized constants
+# Import centralized constants and logging
 try:
     # Relative import (when used as module)
     from .config.constants import (
@@ -24,6 +23,7 @@ try:
         DEFAULT_DPI,
         DEFAULT_FIGURE_SIZE,
     )
+    from .config.logging_config import get_logger
 except ImportError:
     # Absolute import (when run directly)
     from covid_integration.config.constants import (
@@ -31,9 +31,10 @@ except ImportError:
         DEFAULT_DPI,
         DEFAULT_FIGURE_SIZE,
     )
+    from covid_integration.config.logging_config import get_logger
 
 # Configure logging
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 # Set style for publication-quality plots
 plt.style.use("seaborn-v0_8")

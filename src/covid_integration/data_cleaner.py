@@ -6,28 +6,29 @@ for integration. Key functions include country name harmonization, data validati
 and handling missing values.
 """
 
-import logging
 from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
 
-# Import centralized constants
+# Import centralized constants and logging
 try:
     # Relative import (when used as module)
     from .config.constants import (
         COUNTRY_NAME_MAPPING,
         EXCLUDE_REGIONS,
     )
+    from .config.logging_config import get_logger
 except ImportError:
     # Absolute import (when run directly)
     from covid_integration.config.constants import (
         COUNTRY_NAME_MAPPING,
         EXCLUDE_REGIONS,
     )
+    from covid_integration.config.logging_config import get_logger
 
 # Configure logging
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def standardize_country_names(df: pd.DataFrame, source: str = "owid") -> pd.DataFrame:
@@ -50,12 +51,10 @@ def standardize_country_names(df: pd.DataFrame, source: str = "owid") -> pd.Data
         )
         logger.info(f"Applied {len(COUNTRY_NAME_MAPPING)} country name mappings for OWID data")
     else:
-        # For API data, we keep original names but create a reverse mapping column
-        reverse_mapping = {v: k for k, v in COUNTRY_NAME_MAPPING.items()}
-        df_clean["country_standardized"] = (
-            df_clean["country"].map(reverse_mapping).fillna(df_clean["country"])
-        )
-        logger.info("Applied reverse country name mappings for API data")
+        # For API data, we should NOT reverse the mapping - keep original names
+        # The mapping is designed to convert OWID -> API format, so API data should stay as-is
+        df_clean["country_standardized"] = df_clean["country"]
+        logger.info("Used original country names for API data (no mapping applied)")
 
     return df_clean
 
