@@ -122,22 +122,28 @@ poetry run flake8 src/ tests/ streamlit_app.py --max-line-length=100
 
 ```
 covid-data-challenge/
+├── .flake8                        # Linting configuration
+├── outputs/                       # Generated visualizations and datasets
+├── poetry.lock
+├── pyproject.toml                 # Poetry configuration and dependencies
 ├── README.md
-├── pyproject.toml              # Poetry configuration and dependencies
-├── .flake8                     # Linting configuration
-├── streamlit_app.py           # Interactive dashboard application
-├── src/
-│   └── covid_integration/
-│       ├── __init__.py
-│       ├── data_loader.py     # Multi-source data loading (CSV + JSON API)
-│       ├── data_cleaner.py    # Data standardization and quality assessment
-│       ├── data_merger.py     # Temporal alignment and integration logic
-│       └── visualizer.py      # Publication-quality static visualizations
-├── tests/
-│   ├── conftest.py           # Test configuration
-│   └── test_integration.py   # Comprehensive test suite (21+ tests)
-├── outputs/                  # Generated visualizations and datasets
-└── .gitignore
+├── src
+│   ├── __init__.py
+│   └── covid_integration
+│       ├── __init__.py
+│       ├── config
+│       │   ├── __init__.py
+│       │   ├── constants.py
+│       │   └── logging_config.py
+│       ├── data_cleaner.py        # Data standardization and quality assessment
+│       ├── data_loader.py         # Multi-source data loading (CSV + JSON API)
+│       ├── data_merger.py         # Temporal alignment and integration logic
+│       └── visualizer.py          # Publication-quality static visualizations
+├── streamlit_app.py               # Interactive dashboard application
+└── tests
+    ├── __init__.py
+    ├── conftest.py                # Test configuration
+    └── test_integration.py        # Comprehensive test suite (21+ tests)
 ```
 
 ## 📈 Data Sources & Methodology
