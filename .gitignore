@@ -1,0 +1,34 @@
+# COVID-19 Data Integration Project - .gitignore
+
+# === Python ===
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# Environments
+.env
+.venv
+
+# === Project Specific ===
+# Output directories
+outputs/
+
+# === macOS ===
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# === Streamlit ===
+.streamlit/
+streamlit_cache/
