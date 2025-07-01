@@ -13,6 +13,14 @@ from typing import Dict, Tuple
 import numpy as np
 import pandas as pd
 
+# Import centralized constants
+try:
+    # Relative import (when used as module)
+    from .config.constants import DEFAULT_TREND_WINDOW_DAYS
+except ImportError:
+    # Absolute import (when run directly)
+    from covid_integration.config.constants import DEFAULT_TREND_WINDOW_DAYS
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -110,7 +118,9 @@ def align_temporal_data(
         raise ValueError(f"Unsupported alignment strategy: {alignment_strategy}")
 
 
-def calculate_trend_metrics(owid_df: pd.DataFrame, window_days: int = 30) -> pd.DataFrame:
+def calculate_trend_metrics(
+    owid_df: pd.DataFrame, window_days: int = DEFAULT_TREND_WINDOW_DAYS
+) -> pd.DataFrame:
     """
     Calculate trend metrics from historical data for the last N days.
 

@@ -16,7 +16,7 @@ import plotly.express as px
 import streamlit as st
 
 # Add src directory to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 from covid_integration.data_cleaner import clean_all_data
 
