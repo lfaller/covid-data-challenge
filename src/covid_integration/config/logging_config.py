@@ -11,68 +11,8 @@ from typing import Optional
 
 from .constants import LOG_FORMAT, LOG_LEVEL
 
-
-def setup_logger(
-    name: Optional[str] = None, level: str = LOG_LEVEL, format_string: str = LOG_FORMAT, stream=None
-) -> logging.Logger:
-    """
-    Set up a logger with consistent configuration.
-
-    Args:
-        name: Logger name (defaults to calling module)
-        level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        format_string: Log message format
-        stream: Output stream (defaults to stdout)
-
-    Returns:
-        Configured logger instance
-    """
-    # Use calling module name if none provided
-    if name is None:
-        import inspect
-
-        frame = inspect.currentframe().f_back
-        name = frame.f_globals.get("__name__", "covid_integration")
-
-    # Create logger
-    logger = logging.getLogger(name)
-
-    # Avoid duplicate handlers if logger already configured
-    if logger.handlers:
-        return logger
-
-    # Set level
-    numeric_level = getattr(logging, level.upper(), logging.INFO)
-    logger.setLevel(numeric_level)
-
-    # Create handler
-    if stream is None:
-        stream = sys.stdout
-
-    handler = logging.StreamHandler(stream)
-    handler.setLevel(numeric_level)
-
-    # Create formatter
-    formatter = logging.Formatter(format_string)
-    handler.setFormatter(formatter)
-
-    # Add handler to logger
-    logger.addHandler(handler)
-
-    return logger
-
-
-def get_logger(name: Optional[str] = None) -> logging.Logger:
-    """
-    Get a logger with standard configuration.
-
-    Args:
-        name: Logger name (defaults to calling module)
-
-    Returns:
-        Logger instance
-    """
-    return setup_logger(name)
+# Global flag to prevent duplicate configuration
+_LOGGING_CONFIGURED = False
 
 
 def configure_logging(
@@ -86,6 +26,16 @@ def configure_logging(
         format_string: Log message format
         suppress_external: Whether to suppress verbose external library logs
     """
+    global _LOGGING_CONFIGURED
+
+    if _LOGGING_CONFIGURED:
+        return
+
+    # Clear any existing handlers to prevent duplication
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers[:]:
+        root_logger.removeHandler(handler)
+
     # Configure root logger
     logging.basicConfig(
         level=getattr(logging, level.upper(), logging.INFO),
@@ -96,7 +46,6 @@ def configure_logging(
 
     # Suppress verbose external library logging
     if suppress_external:
-        # Common verbose loggers to quiet down
         external_loggers = [
             "urllib3.connectionpool",
             "requests.packages.urllib3",
@@ -108,6 +57,33 @@ def configure_logging(
         for logger_name in external_loggers:
             logging.getLogger(logger_name).setLevel(logging.WARNING)
 
+    _LOGGING_CONFIGURED = True
+
+
+def get_logger(name: Optional[str] = None) -> logging.Logger:
+    """
+    Get a logger with standard configuration.
+
+    Args:
+        name: Logger name (defaults to calling module)
+
+    Returns:
+        Logger instance
+    """
+    # Ensure logging is configured
+    if not _LOGGING_CONFIGURED:
+        configure_logging()
+
+    # Use calling module name if none provided
+    if name is None:
+        import inspect
+
+        frame = inspect.currentframe().f_back
+        name = frame.f_globals.get("__name__", "covid_integration")
+
+    # Return logger without adding extra handlers
+    return logging.getLogger(name)
+
 
 def set_log_level(level: str) -> None:
     """
@@ -117,14 +93,7 @@ def set_log_level(level: str) -> None:
         level: New logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     """
     numeric_level = getattr(logging, level.upper(), logging.INFO)
-
-    # Update all existing loggers that start with covid_integration
-    for name in logging.root.manager.loggerDict:
-        if isinstance(name, str) and name.startswith("covid_integration"):
-            logger = logging.getLogger(name)
-            logger.setLevel(numeric_level)
-            for handler in logger.handlers:
-                handler.setLevel(numeric_level)
+    logging.getLogger().setLevel(numeric_level)
 
 
 # Convenience functions for different log levels
@@ -153,5 +122,5 @@ def log_critical(message: str, logger_name: Optional[str] = None) -> None:
     get_logger(logger_name).critical(message)
 
 
-# Initialize logging when module is imported
-configure_logging()
+# Don't initialize logging automatically - let modules control when to configure
+# configure_logging()
