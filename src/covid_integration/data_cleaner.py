@@ -14,17 +14,11 @@ import pandas as pd
 # Import centralized constants and logging
 try:
     # Relative import (when used as module)
-    from .config.constants import (
-        COUNTRY_NAME_MAPPING,
-        EXCLUDE_REGIONS,
-    )
+    from .config.constants import COUNTRY_NAME_MAPPING, EXCLUDE_REGIONS
     from .config.logging_config import get_logger
 except ImportError:
     # Absolute import (when run directly)
-    from covid_integration.config.constants import (
-        COUNTRY_NAME_MAPPING,
-        EXCLUDE_REGIONS,
-    )
+    from covid_integration.config.constants import COUNTRY_NAME_MAPPING, EXCLUDE_REGIONS
     from covid_integration.config.logging_config import get_logger
 
 # Configure logging
