@@ -16,6 +16,22 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+# Import centralized constants
+try:
+    # Relative import (when used as module)
+    from .config.constants import (
+        COLORS,
+        DEFAULT_DPI,
+        DEFAULT_FIGURE_SIZE,
+    )
+except ImportError:
+    # Absolute import (when run directly)
+    from covid_integration.config.constants import (
+        COLORS,
+        DEFAULT_DPI,
+        DEFAULT_FIGURE_SIZE,
+    )
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -24,22 +40,12 @@ plt.style.use("seaborn-v0_8")
 sns.set_palette("husl")
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-# Custom color palette
-COLORS = {
-    "primary": "#2E86AB",
-    "secondary": "#A23B72",
-    "accent": "#F18F01",
-    "success": "#C73E1D",
-    "warning": "#F4A261",
-    "info": "#264653",
-}
-
 
 def setup_plot_style():
     """Set up consistent styling for all plots."""
     plt.rcParams.update(
         {
-            "figure.figsize": (12, 8),
+            "figure.figsize": DEFAULT_FIGURE_SIZE,
             "font.size": 11,
             "axes.titlesize": 14,
             "axes.labelsize": 12,
@@ -47,7 +53,7 @@ def setup_plot_style():
             "ytick.labelsize": 10,
             "legend.fontsize": 10,
             "figure.titlesize": 16,
-            "savefig.dpi": 300,
+            "savefig.dpi": DEFAULT_DPI,
             "savefig.bbox": "tight",
         }
     )

@@ -12,58 +12,22 @@ from typing import Dict, Tuple
 import numpy as np
 import pandas as pd
 
+# Import centralized constants
+try:
+    # Relative import (when used as module)
+    from .config.constants import (
+        COUNTRY_NAME_MAPPING,
+        EXCLUDE_REGIONS,
+    )
+except ImportError:
+    # Absolute import (when run directly)
+    from covid_integration.config.constants import (
+        COUNTRY_NAME_MAPPING,
+        EXCLUDE_REGIONS,
+    )
+
 # Configure logging
 logger = logging.getLogger(__name__)
-
-# Country name mapping dictionary to handle mismatches between data sources
-COUNTRY_NAME_MAPPING = {
-    # OWID name -> disease.sh API name
-    "Bosnia and Herzegovina": "Bosnia",
-    "Cape Verde": "Cabo Verde",
-    "Cote d'Ivoire": "Côte d'Ivoire",
-    "Democratic Republic of Congo": "DRC",
-    "East Timor": "Timor-Leste",
-    "Curacao": "Curaçao",
-    "Bonaire Sint Eustatius and Saba": "Caribbean Netherlands",
-    "United States": "USA",
-    "United Kingdom": "UK",
-    "South Korea": "S. Korea",
-    "Czech Republic": "Czechia",
-    "North Macedonia": "Macedonia",
-    "Myanmar": "Burma",
-    "Republic of the Congo": "Congo",
-    "Eswatini": "Swaziland",
-    "Vatican": "Holy See (Vatican City State)",
-    "Brunei": "Brunei Darussalam",
-    "Moldova": "Moldova, Republic of",
-    "Russia": "Russian Federation",
-    "Syria": "Syrian Arab Republic",
-    "Tanzania": "Tanzania, United Republic of",
-    "Turkey": "Turkey",
-    "Venezuela": "Venezuela, Bolivarian Republic of",
-    "Vietnam": "Viet Nam",
-    "Laos": "Lao People's Democratic Republic",
-}
-
-# Countries/regions to exclude (aggregates, non-countries)
-EXCLUDE_REGIONS = {
-    "World",
-    "Africa",
-    "Asia",
-    "Europe",
-    "North America",
-    "South America",
-    "Oceania",
-    "European Union",
-    "High income",
-    "Low income",
-    "Lower middle income",
-    "Upper middle income",
-    "OECD countries",
-    "International",
-    "MS Zaandam",
-    "Diamond Princess",
-}
 
 
 def standardize_country_names(df: pd.DataFrame, source: str = "owid") -> pd.DataFrame:

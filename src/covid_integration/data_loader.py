@@ -13,13 +13,20 @@ from typing import Dict, List
 import pandas as pd
 import requests
 
+# Import centralized constants
+try:
+    # Relative import (when used as module)
+    from .config.constants import DISEASE_SH_API_URL, OWID_CSV_URL
+except ImportError:
+    # Absolute import (when run directly)
+    from covid_integration.config.constants import (
+        DISEASE_SH_API_URL,
+        OWID_CSV_URL,
+    )
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
-
-# Data source URLs
-OWID_CSV_URL = "https://raw.githubusercontent.com/owid/covid-19-data/refs/heads/master/public/data/owid-covid-data.csv"  # noqa: E501
-DISEASE_SH_API_URL = "https://disease.sh/v3/covid-19/countries"
 
 
 def load_owid_data(url: str = OWID_CSV_URL) -> pd.DataFrame:
