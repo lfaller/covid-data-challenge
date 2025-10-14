@@ -12,15 +12,11 @@ from typing import Dict, Tuple
 import numpy as np
 import pandas as pd
 
-# Import centralized constants and logging
-try:
-    # Relative import (when used as module)
-    from .config.constants import DEFAULT_TREND_WINDOW_DAYS
-    from .config.logging_config import get_logger
-except ImportError:
-    # Absolute import (when run directly)
-    from covid_integration.config.constants import DEFAULT_TREND_WINDOW_DAYS
-    from covid_integration.config.logging_config import get_logger
+# Import from centralized package utilities
+from covid_integration import get_constants, get_logger
+
+# Get constants
+DEFAULT_TREND_WINDOW_DAYS = get_constants('DEFAULT_TREND_WINDOW_DAYS')
 
 # Configure logging
 logger = get_logger(__name__)

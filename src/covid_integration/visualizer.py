@@ -15,15 +15,11 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-# Import centralized constants and logging
-try:
-    # Relative import (when used as module)
-    from .config.constants import COLORS, DEFAULT_DPI, DEFAULT_FIGURE_SIZE
-    from .config.logging_config import get_logger
-except ImportError:
-    # Absolute import (when run directly)
-    from covid_integration.config.constants import COLORS, DEFAULT_DPI, DEFAULT_FIGURE_SIZE
-    from covid_integration.config.logging_config import get_logger
+# Import from centralized package utilities
+from covid_integration import get_constants, get_logger
+
+# Get constants
+COLORS, DEFAULT_DPI, DEFAULT_FIGURE_SIZE = get_constants('COLORS', 'DEFAULT_DPI', 'DEFAULT_FIGURE_SIZE')
 
 # Configure logging
 logger = get_logger(__name__)
