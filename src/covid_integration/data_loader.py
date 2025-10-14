@@ -12,18 +12,11 @@ from typing import Dict, List
 import pandas as pd
 import requests
 
-# Import centralized constants and logging
-try:
-    # Relative import (when used as module)
-    from .config.constants import DISEASE_SH_API_URL, OWID_CSV_URL
-    from .config.logging_config import get_logger
-except ImportError:
-    # Absolute import (when run directly)
-    from covid_integration.config.constants import (
-        DISEASE_SH_API_URL,
-        OWID_CSV_URL,
-    )
-    from covid_integration.config.logging_config import get_logger
+# Import from centralized package utilities
+from covid_integration import get_constants, get_logger
+
+# Get constants
+OWID_CSV_URL, DISEASE_SH_API_URL = get_constants('OWID_CSV_URL', 'DISEASE_SH_API_URL')
 
 # Configure logging
 logger = get_logger(__name__)
