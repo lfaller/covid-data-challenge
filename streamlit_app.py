@@ -475,31 +475,27 @@ def main():
             f"📅 **Data Coverage:** Historical trends through {latest_date.strftime('%B %d, %Y')} | API snapshot from {latest_date.strftime('%B %Y')}"
         )
 
-    # Sidebar filters
-    st.sidebar.header("🔍 Filters & Options")
-
-    # Add sidebar disclaimer too
-    st.sidebar.error("⚠️ Data is historical through August 2024 only")
-
-    # Country selection - define all_countries first
+    # Country selection for comparison tab
     all_countries = sorted(merged_df["country_standardized"].unique())
-    default_countries = ["USA", "India", "Brazil", "Germany", "France"]  # Updated to use 'USA'
+    default_countries = ["USA", "India", "Brazil", "Germany", "France"]
     available_defaults = [c for c in default_countries if c in all_countries]
 
-    # Debug expander for country list (only in debug mode)
+    # Use full dataset (no filtering)
+    filtered_df = merged_df.copy()
+
+    # Debug mode country info (only if debug enabled)
     if DEBUG_MODE:
+        st.sidebar.header("🔧 Debug Info")
+        st.sidebar.error("⚠️ Data is historical through August 2024 only")
         with st.sidebar.expander("🔧 Debug: Available Countries"):
             st.write(f"**Total countries:** {len(merged_df)}")
             st.write(f"**Countries in dropdown:** {len(all_countries)}")
-            # Show first 20 countries alphabetically
             st.write("**Sample countries:**")
             for i, country in enumerate(all_countries[:20]):
                 st.write(f"{i + 1}. {country}")
             if len(all_countries) > 20:
                 st.write(f"... and {len(all_countries) - 20} more")
 
-    # Debug: Check for US variants (only in debug mode)
-    if DEBUG_MODE:
         us_variants = [
             country
             for country in all_countries
@@ -509,26 +505,6 @@ def main():
             st.sidebar.warning(f"⚠️ US not found. Available US-like countries: {us_variants}")
         else:
             st.sidebar.success(f"✅ US found! Available US-like countries: {us_variants}")
-
-    selected_countries = st.sidebar.multiselect(
-        "Select Countries for Comparison:",
-        options=all_countries,
-        default=available_defaults[:5],  # Limit to 5 for performance
-        help="Choose countries to compare in the analysis charts",
-    )
-
-    # Metric filters
-    case_threshold = st.sidebar.slider(
-        "Minimum Cases (Aug 2024):",
-        min_value=0,
-        max_value=int(merged_df["api_current_cases"].max()),
-        value=0,
-        step=1000,
-        help="Filter countries by minimum number of cases as of August 2024",
-    )
-
-    # Filter dataframe based on selections
-    filtered_df = merged_df[merged_df["api_current_cases"] >= case_threshold].copy()
 
     # Overview metrics
     st.header("📈 Overview (August 2024 Data)")
@@ -564,6 +540,14 @@ def main():
     with tab2:
         st.subheader("📊 Country Comparison (August 2024 Data)")
 
+        # Country selection within the tab
+        selected_countries = st.multiselect(
+            "Select Countries to Compare:",
+            options=all_countries,
+            default=available_defaults[:5],
+            help="Choose countries to compare in the analysis charts",
+        )
+
         if selected_countries:
             comparison_metric = st.selectbox(
                 "Select Analysis Type:",
@@ -579,24 +563,23 @@ def main():
             create_country_comparison_plot(filtered_df, selected_countries, comparison_metric)
 
             # Show summary table for selected countries
-            if selected_countries:
-                st.subheader("📋 Selected Countries Summary (August 2024)")
-                summary_cols = [
-                    "country_standardized",
-                    "api_current_cases",
-                    "current_cases_per_100k",
-                    "owid_population",
-                    "cases_data_gap_percent",
-                ]
-                available_cols = [col for col in summary_cols if col in filtered_df.columns]
+            st.subheader("📋 Selected Countries Summary (August 2024)")
+            summary_cols = [
+                "country_standardized",
+                "api_current_cases",
+                "current_cases_per_100k",
+                "owid_population",
+                "cases_data_gap_percent",
+            ]
+            available_cols = [col for col in summary_cols if col in filtered_df.columns]
 
-                summary_df = filtered_df[
-                    filtered_df["country_standardized"].isin(selected_countries)
-                ][available_cols].round(2)
+            summary_df = filtered_df[
+                filtered_df["country_standardized"].isin(selected_countries)
+            ][available_cols].round(2)
 
-                st.dataframe(summary_df, use_container_width=True)
+            st.dataframe(summary_df, use_container_width=True)
         else:
-            st.info("👈 Please select countries in the sidebar to see comparisons.")
+            st.info("👆 Please select countries above to see comparisons.")
 
     with tab3:
         create_world_map_visualization(filtered_df)
