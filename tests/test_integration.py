@@ -15,16 +15,18 @@ import pandas as pd
 import pytest
 import requests
 
+from covid_integration import get_constants
 from covid_integration.data_cleaner import (
-    COUNTRY_NAME_MAPPING,
-    EXCLUDE_REGIONS,
     clean_api_data,
     clean_owid_data,
-    filter_valid_countries,
     identify_matching_countries,
     standardize_country_names,
     validate_data_quality,
 )
+from covid_integration.utils.data_filters import filter_valid_countries
+
+# Get constants
+COUNTRY_NAME_MAPPING, EXCLUDE_REGIONS = get_constants('COUNTRY_NAME_MAPPING', 'EXCLUDE_REGIONS')
 
 # Import modules to test
 from covid_integration.data_loader import (

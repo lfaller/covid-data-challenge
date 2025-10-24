@@ -14,6 +14,7 @@ import requests
 
 # Import from centralized package utilities
 from covid_integration import get_constants, get_logger
+from covid_integration.utils.data_filters import filter_non_countries
 
 # Get constants
 OWID_CSV_URL, DISEASE_SH_API_URL = get_constants('OWID_CSV_URL', 'DISEASE_SH_API_URL')
@@ -104,9 +105,8 @@ def clean_owid_data(df: pd.DataFrame) -> pd.DataFrame:
     available_columns = [col for col in key_columns if col in df_clean.columns]
     df_clean = df_clean[available_columns]
 
-    # Remove rows for world data and other aggregates
-    exclude_codes = ["OWID_WRL", "OWID_HIC", "OWID_LIC", "OWID_LMC", "OWID_UMC"]
-    df_clean = df_clean[~df_clean["iso_code"].isin(exclude_codes)]
+    # Remove rows for world data and other aggregates using centralized filter
+    df_clean = filter_non_countries(df_clean, country_col="country", iso_code_col="iso_code")
 
     # Sort by country and date
     df_clean = df_clean.sort_values(["country", "date"]).reset_index(drop=True)
