@@ -13,9 +13,10 @@ import pandas as pd
 
 # Import from centralized package utilities
 from covid_integration import get_constants, get_logger
+from covid_integration.utils.data_filters import filter_valid_countries
 
 # Get constants
-COUNTRY_NAME_MAPPING, EXCLUDE_REGIONS = get_constants('COUNTRY_NAME_MAPPING', 'EXCLUDE_REGIONS')
+COUNTRY_NAME_MAPPING = get_constants('COUNTRY_NAME_MAPPING')
 
 # Configure logging
 logger = get_logger(__name__)
@@ -49,36 +50,7 @@ def standardize_country_names(df: pd.DataFrame, source: str = "owid") -> pd.Data
     return df_clean
 
 
-def filter_valid_countries(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Filter out non-country entries (continents, aggregates, etc.).
-
-    Args:
-        df: DataFrame with country data
-
-    Returns:
-        DataFrame with only valid countries
-    """
-    initial_count = len(df["country"].unique())
-
-    # Remove excluded regions
-    df_filtered = df[~df["country"].isin(EXCLUDE_REGIONS)].copy()
-
-    # Remove any remaining aggregates (often have specific patterns)
-    # Remove entries that are clearly not countries
-    df_filtered = df_filtered[
-        ~df_filtered["country"].str.contains(
-            r"income|OECD|Union|International", case=False, na=False
-        )
-    ]
-
-    final_count = len(df_filtered["country"].unique())
-    logger.info(
-        f"Filtered countries: {initial_count} -> {final_count} "
-        f"(removed {initial_count - final_count} non-country entries)"
-    )
-
-    return df_filtered
+# filter_valid_countries function now imported from covid_integration.utils.data_filters
 
 
 def validate_data_quality(df: pd.DataFrame, source: str) -> Dict:
